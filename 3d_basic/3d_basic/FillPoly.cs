@@ -13,6 +13,8 @@ namespace _3d_basic
     {
         public static void FillPolygon(List<Point> poly_list, List<int> z_list, int [,] z_bufor, Color c, DirectBitmap btm)
         {
+            if (PolyOutOfBtm(poly_list, btm))
+                return;
             Point[] poly = new List<Point>(poly_list).ToArray();
             int[] idx = Enumerable.Range(0, poly.Length).ToArray();
             Array.Sort((Point[])poly.Clone(), idx, new YPointsComparer());
@@ -52,20 +54,6 @@ namespace _3d_basic
                 for (int i = 0; i < AET.Count; i += 2)
                 {
                     scanline_list.Add((curr_y, (int)Math.Round(AET[i].x), (int)Math.Round(AET[i + 1].x)));
-                    //int x = (int)Math.Round(AET[i].x);
-                    //while (x <= (int)Math.Round(AET[i + 1].x))
-                    //{
-                    //    if (OnBitmap(x, curr_y, btm.Width, btm.Height))
-                    //    {
-                    //        int tmp_z_value = ComputeZFrorPoint(poly_list, z_list, x, curr_y);
-                    //        if (z_bufor[x, curr_y] > tmp_z_value)
-                    //        {
-                    //            btm.SetPixel(x, curr_y, c);
-                    //            z_bufor[x, curr_y] = tmp_z_value;
-                    //        }
-                    //    }
-                    //    x++;
-                    //}
                     AET[i].IncrementX();
                     AET[i + 1].IncrementX();
                 }
@@ -134,6 +122,15 @@ namespace _3d_basic
             if (x < 0 || y < 0 || x >= btm_x || y >= btm_y)
                 return false;
             return true;
+        }
+        public static bool PolyOutOfBtm(List<Point> poly_list, DirectBitmap btm)
+        {
+            foreach(Point p in poly_list)
+            {
+                if (OnBitmap(p.X, p.Y, btm.Width, btm.Height))
+                    return false;
+            }
+            return true; ;
         }
     }
 }

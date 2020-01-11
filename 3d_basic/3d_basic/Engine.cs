@@ -31,21 +31,18 @@ namespace _3d_basic
             p_box.Image = btm.Bitmap;
             z_buf = new int[p_box.Width, p_box.Height];
             FlushBuf();
-            SetTimer(1);
+            SetTimer(50);
             a = (double)p_box.Height / p_box.Width;
             FillProjectionMatrix();
-            view_matrix = CreateMatrix.DenseOfArray(new double[,] {
-                {0,1,0,-0.5},
-                {0,0,1,-0.5},
-                {1,0,0,-3},
-                {0,0,0,1}});
+            LookAt(CreateVector.DenseOfArray(new double[] {2, 2, 10 }), CreateVector.DenseOfArray(new double[] {0,0,0 }));
             InitializeMeshes();
         }
 
         private void InitializeMeshes()
         {
-            Matrix<double> model_matrix = CreateMatrix.DenseIdentity<double>(4);
-            meshes = new List<Mesh>(){ new Cube(Color.Red, model_matrix)};
+            meshes = new List<Mesh>();
+            meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
+            meshes.Add(new Cube(Color.Red, -1, -1, -1, 0,0,0));
         }
 
         public void FillProjectionMatrix()
@@ -74,6 +71,7 @@ namespace _3d_basic
         {
             Logic();
             VanishBitmap();
+            FlushBuf();
             foreach (Mesh mesh in meshes)
             {
                 Render(mesh);
@@ -82,7 +80,6 @@ namespace _3d_basic
         }
         private void Render(Mesh m)
         {
-            FlushBuf();
             List<Vector<double>> converted_points = new List<Vector<double>>();
             for (int i = 0; i < m.points.Length; i++)
             {
@@ -121,16 +118,34 @@ namespace _3d_basic
         private void Logic()
         {
             meshes[0].ResetModelMatrix();
-            meshes[0].RotationX(0.1);
+            meshes[1].ResetModelMatrix();
+            meshes[1].Translation(0, 0, 0.1);
+            meshes[0].Translation(0, 0, 0);
+            
+            meshes[0].RotationY(0.1);
+            //meshes[0].RotationZ(0.01);
+            //meshes[0].RotationX(0.04);
+            //meshes[0].RotationY(0.1);
+            //meshes[0].RotationZ(0.1);
         }
         private void VanishBitmap()
         {
             Graphics tmp_graphics = Graphics.FromImage(btm.Bitmap);
-            tmp_graphics.Clear(Color.Empty);
+            tmp_graphics.Clear(Color.Black);
         }
-        private void LookAt()
+        private void LookAt(Vector<double> from, Vector<double> to)
         {
-
+            var up_v = CreateVector.Dense<double>(new double[] { 0, 1, 0 });
+            var z_axis = (from - to).Normalize(1);
+            var x_axis = CrossProduct.Cross(up_v, z_axis);
+            var y_axis = CrossProduct.Cross(z_axis, x_axis);
+            var tmp_matrix =  CreateMatrix.DenseOfArray(new double[,] {
+                {x_axis[0],     y_axis[0],      z_axis[0],      from[0]},
+                {x_axis[1],     y_axis[1],      z_axis[1],      from[1]},
+                {x_axis[2],     y_axis[2],      z_axis[2],      from[2]},
+                {0,     0,      0,      1}
+            });
+            view_matrix = tmp_matrix.Inverse();
         }
         public void TestFill()
         {

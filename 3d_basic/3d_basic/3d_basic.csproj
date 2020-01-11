@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CrossProduct.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="DirectBitmapa.cs" />
     <Compile Include="EdgeBucket.cs" />
