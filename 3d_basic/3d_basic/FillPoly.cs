@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
-using System.Threading.Tasks;
 
 namespace _3d_basic
 {

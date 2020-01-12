@@ -11,7 +11,7 @@ namespace _3d_basic
 {
     class Cube:Mesh
     {
-        public Cube(Color col, double _x, double _y, double _z, double ax, double ay, double az)
+        public Cube(Color col, double _x, double _y, double _z, double ax, double ay, double az):base(col,_x, _y, _z, ax, ay, az)
         {
             points = new DenseVector[] {
                         new DenseVector(new double[] { 0,0,0,1}),
@@ -36,10 +36,6 @@ namespace _3d_basic
                         new Face(0, 1, 4, Color.Magenta),
                         new Face(1, 4, 5, Color.Magenta),
             };
-            color = col;
-            model_matrix = CreateMatrix.DenseIdentity<double>(4);
-            angle_x = ax; angle_y = ay; angle_z = az;
-            x = _x; y = _y; z = _z;
         }
     }
 }

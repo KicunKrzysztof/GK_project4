@@ -16,7 +16,17 @@ namespace _3d_basic
         public Form1()
         {
             InitializeComponent();
-            engine = new Engine(pictureBox); 
+            engine = new Engine(pictureBox, backgroundWorker1); 
+        }
+
+        private void backgroundWorker1_DoWork(object sender, DoWorkEventArgs e)
+        {
+            engine.RunFrame();
+        }
+
+        private void backgroundWorker1_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            engine.Refresh();
         }
     }
 }

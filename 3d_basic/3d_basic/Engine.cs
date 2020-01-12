@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
-//using MathNet.Numerics.LinearAlgebra.Double;
+using System.IO;
+using Newtonsoft.Json;
+//using System.Threading;
+using System.ComponentModel;
 
 namespace _3d_basic
 {
@@ -14,7 +17,7 @@ namespace _3d_basic
     {
         public PictureBox p_box;
         private DirectBitmap btm;
-        private Timer my_timer;
+        private System.Windows.Forms.Timer my_timer;
         private int[,] z_buf;
         private Matrix<double> view_matrix, projection_matrix;
         private double 
@@ -24,24 +27,29 @@ namespace _3d_basic
             a; //aspect ratio
         private List<Mesh> meshes;
         private const int z_depth = 10000;
-        public Engine(PictureBox _p_box) 
+        public BackgroundWorker bgr_worker;
+        public Engine(PictureBox _p_box, BackgroundWorker _bgr_worker) 
         {
+            bgr_worker = _bgr_worker;
             p_box = _p_box;
             btm = new DirectBitmap(p_box.Width, p_box.Height);
             p_box.Image = btm.Bitmap;
             z_buf = new int[p_box.Width, p_box.Height];
             FlushBuf();
-            SetTimer(50);
+            SetTimer(35);
             a = (double)p_box.Height / p_box.Width;
             FillProjectionMatrix();
-            LookAt(CreateVector.DenseOfArray(new double[] {2, 2, 10 }), CreateVector.DenseOfArray(new double[] {0,0,0 }));
+            LookAt(CreateVector.DenseOfArray(new double[] {2, 2, 8 }), CreateVector.DenseOfArray(new double[] {0,0,0 }));
             InitializeMeshes();
         }
 
         private void InitializeMeshes()
         {
             meshes = new List<Mesh>();
-            meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
+            var json = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\sphere_test2.babylon");
+            SimpleBabylon sphere = JsonConvert.DeserializeObject<SimpleBabylon>(json);
+            meshes.Add(sphere.ConvertToMesh(Color.Green, 0, 0, 0, 0, 0, 0));
+            //meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
             meshes.Add(new Cube(Color.Red, -1, -1, -1, 0,0,0));
         }
 
@@ -69,6 +77,12 @@ namespace _3d_basic
         }
         private void TimerEventProcessor(Object myObject, EventArgs myEventArgs)
         {
+            if (bgr_worker.IsBusy)
+                return;
+            bgr_worker.RunWorkerAsync();
+        }
+        public void RunFrame()
+        {
             Logic();
             VanishBitmap();
             FlushBuf();
@@ -76,6 +90,9 @@ namespace _3d_basic
             {
                 Render(mesh);
             }
+        }
+        public void Refresh()
+        {
             p_box.Refresh();
         }
         private void Render(Mesh m)
@@ -118,13 +135,12 @@ namespace _3d_basic
         private void Logic()
         {
             meshes[0].ResetModelMatrix();
-            meshes[1].ResetModelMatrix();
-            meshes[1].Translation(0, 0, 0.1);
+            meshes[1].ResetModelMatrix();   
+            //meshes[1].Translation(0, 0, 0.1);
             meshes[0].Translation(0, 0, 0);
-            
             meshes[0].RotationY(0.1);
-            //meshes[0].RotationZ(0.01);
-            //meshes[0].RotationX(0.04);
+            meshes[0].RotationZ(0.01);
+            meshes[1].RotationX(0.1);
             //meshes[0].RotationY(0.1);
             //meshes[0].RotationZ(0.1);
         }

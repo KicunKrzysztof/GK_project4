@@ -5,19 +5,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
+//using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace _3d_basic
 {
     class Mesh
     {
-        public DenseVector[] points;
+        public Vector<double>[] points;
         public Face[] faces;
         public Color color;
         public Matrix<double> model_matrix;
         public double x, y, z;
         public double angle_x, angle_y, angle_z;
 
+        public Mesh(Color col, double _x, double _y, double _z, double ax, double ay, double az)
+        {
+            model_matrix = CreateMatrix.DenseIdentity<double>(4);
+            color = col;
+            angle_x = ax; angle_y = ay; angle_z = az;
+            x = _x; y = _y; z = _z;
+        }
+        public Mesh(Color col, double _x, double _y, double _z, double ax, double ay, double az, Vector<double>[] _points, Face[] _faces)
+        {
+            model_matrix = CreateMatrix.DenseIdentity<double>(4);
+            color = col;
+            angle_x = ax; angle_y = ay; angle_z = az;
+            x = _x; y = _y; z = _z;
+            points = _points;
+            faces = _faces;
+        }
         public void RotationX(double delta_angle)
         {
             angle_x += delta_angle;
@@ -71,7 +87,7 @@ namespace _3d_basic
     {
         public int[] indexes;
         public Color? color;
-        public Face (int aa, int bb, int cc, Color c)
+        public Face (int aa, int bb, int cc, Color? c)
         {
             indexes = new int[] { aa, bb, cc };
             color = c;
