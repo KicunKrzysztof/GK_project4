@@ -36,20 +36,20 @@ namespace _3d_basic
             p_box.Image = btm.Bitmap;
             z_buf = new int[p_box.Width, p_box.Height];
             FlushBuf();
-            SetTimer(35);
+            SetTimer(60);
             a = (double)p_box.Height / p_box.Width;
             FillProjectionMatrix();
-            LookAt(CreateVector.DenseOfArray(new double[] {2, 2, 8 }), CreateVector.DenseOfArray(new double[] {0,0,0 }));
+            LookAt(CreateVector.DenseOfArray(new double[] {2, 2, 10 }), CreateVector.DenseOfArray(new double[] {0,0,0 }));
             InitializeMeshes();
         }
 
         private void InitializeMeshes()
         {
             meshes = new List<Mesh>();
-            var json = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\sphere_test2.babylon");
-            SimpleBabylon sphere = JsonConvert.DeserializeObject<SimpleBabylon>(json);
-            meshes.Add(sphere.ConvertToMesh(Color.Green, 0, 0, 0, 0, 0, 0));
-            //meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
+            //var json = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\sphere_test2.babylon");
+            //SimpleBabylon sphere = JsonConvert.DeserializeObject<SimpleBabylon>(json);
+            //meshes.Add(sphere.ConvertToMesh(Color.Green, 0, 0, 0, 0, 0, 0));
+            meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
             meshes.Add(new Cube(Color.Red, -1, -1, -1, 0,0,0));
         }
 
@@ -135,14 +135,15 @@ namespace _3d_basic
         private void Logic()
         {
             meshes[0].ResetModelMatrix();
-            meshes[1].ResetModelMatrix();   
-            //meshes[1].Translation(0, 0, 0.1);
-            meshes[0].Translation(0, 0, 0);
+            meshes[1].ResetModelMatrix();  
             meshes[0].RotationY(0.1);
             meshes[0].RotationZ(0.01);
+            //meshes[0].Translation(0, 0.01, 0);
+            //meshes[0].Translation(0, 0, 0);
+
             meshes[1].RotationX(0.1);
-            //meshes[0].RotationY(0.1);
-            //meshes[0].RotationZ(0.1);
+            meshes[0].RotationY(0.1);
+            meshes[0].RotationZ(0.1);
         }
         private void VanishBitmap()
         {
