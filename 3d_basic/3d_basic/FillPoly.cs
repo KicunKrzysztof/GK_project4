@@ -5,15 +5,35 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
+//using System.Linq;
 
 namespace _3d_basic
 {
     class FillPolyHelper
     {
-        public static void FillPolygon(List<Point> poly_list, List<int> z_list, int [,] z_bufor, Color c, DirectBitmap btm)
+        public static void FillPolygon(List<Point> poly_list, List<int> z_list, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, int[,] z_bufor, ColorDouble poly_color, SurfaceFactors surface_factors, DirectBitmap btm)
         {
             if (PolyOutOfBtm(poly_list, btm))
                 return;
+            if (AreCollinear(poly_list))
+                return;
+            var sum_normal_vector = CreateVector.DenseOfArray(new double[] { 0, 0, 0 });
+            var sum_view_vector = CreateVector.DenseOfArray(new double[] { 0, 0, 0 });
+            foreach (var normal in normals)
+                sum_normal_vector += CreateVector.DenseOfArray(new double[] { normal[0], normal[1], normal[2] });
+            foreach (var vertex in points_3d)
+                sum_view_vector += CreateVector.DenseOfArray(new double[] { vertex[0], vertex[1], vertex[2] });
+            sum_view_vector = sum_view_vector.Normalize(1);
+            sum_normal_vector = sum_normal_vector.Normalize(1);
+            var test = sum_view_vector.DotProduct(sum_normal_vector);
+            if (sum_view_vector.DotProduct(sum_normal_vector) > 0.3)
+                return;
+            var vertex_colors = new List<ColorDouble>();
+            for (int i = 0; i < poly_list.Count; i++)
+            {
+                vertex_colors.Add(Phong(poly_list[i].X, poly_list[i].Y, poly_list, null, surface_factors, poly_color, normals, points_3d, lights));
+            }
+
             Point[] poly = new List<Point>(poly_list).ToArray();
             int[] idx = Enumerable.Range(0, poly.Length).ToArray();
             Array.Sort((Point[])poly.Clone(), idx, new YPointsComparer());
@@ -66,7 +86,9 @@ namespace _3d_basic
                         int tmp_z_value = ComputeZFrorPoint(poly_list, z_list, x, boundaries.Item1);
                         if (z_bufor[x, boundaries.Item1] > tmp_z_value)
                         {
-                            btm.SetPixel(x, boundaries.Item1, c);
+                            var c = Gouraud(x, boundaries.Item1, poly_list, vertex_colors,null, null, null, null, null);
+                            //var c = Phong(x, boundaries.Item1, poly_list, null, surface_factors, poly_color, normals, points_3d, lights);
+                            btm.SetPixel(x, boundaries.Item1, c.GetColor());
                             z_bufor[x, boundaries.Item1] = tmp_z_value;
                         }
                     }
@@ -99,13 +121,13 @@ namespace _3d_basic
             Barycentric(p, poly[0], poly[1], poly[2], ref u, ref v, ref w);
             return (int)(u * z_list[0] + v * z_list[1] + w * z_list[2]);
         }
-        // Compute barycentric coordinates (u, v, w) for
-        // point p with respect to triangle (a, b, c)
+        //Compute barycentric coordinates(u, v, w) for
+        // point p with respect to triangle(a, b, c)
         public static void Barycentric(Point p, Point a, Point b, Point c, ref double u, ref double v, ref double w)
         {
-            Vector<double> v0 = CreateVector.DenseOfArray(new double[] {b.X - a.X, b.Y - a.Y });
-            Vector<double> v1 = CreateVector.DenseOfArray(new double[] {c.X - a.X, c.Y - a.Y });
-            Vector<double> v2 = CreateVector.DenseOfArray(new double[] {p.X - a.X, p.Y - a.Y });
+            Vector<double> v0 = CreateVector.DenseOfArray(new double[] { b.X - a.X, b.Y - a.Y });
+            Vector<double> v1 = CreateVector.DenseOfArray(new double[] { c.X - a.X, c.Y - a.Y });
+            Vector<double> v2 = CreateVector.DenseOfArray(new double[] { p.X - a.X, p.Y - a.Y });
             double d00 = v0.DotProduct(v0);
             double d01 = v0.DotProduct(v1);
             double d11 = v1.DotProduct(v1);
@@ -116,6 +138,14 @@ namespace _3d_basic
             w = (d00 * d21 - d01 * d20) / denom;
             u = 1.0f - v - w;
         }
+        //static public void Barycentric(Point p, Point a, Point b, Point c, ref double factor1, ref double factor2, ref double factor3)
+        //{
+        //    factor1 = ((b.Y - c.Y) * (p.X - c.X) + (c.X - b.X) * (p.Y - c.Y)) / (double)((b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y));
+        //    factor2 = ((c.Y - a.Y) * (p.X - c.X) + (a.X - c.X) * (p.Y - c.Y)) / (double)((b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y));
+        //    factor3 = 1 - factor1 - factor2;
+        //    if (Double.IsNaN(factor1))
+        //        Console.WriteLine("kupa");
+        //}
         public static bool OnBitmap(int x, int y, int btm_x, int btm_y)
         {
             if (x < 0 || y < 0 || x >= btm_x || y >= btm_y)
@@ -125,11 +155,36 @@ namespace _3d_basic
         public static bool PolyOutOfBtm(List<Point> poly_list, DirectBitmap btm)
         {
             foreach(Point p in poly_list)
-            {
                 if (OnBitmap(p.X, p.Y, btm.Width, btm.Height))
                     return false;
-            }
             return true; ;
+        }
+        public static ColorDouble Gouraud(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
+        {
+            double f1 = 0; double f2 = 0; double f3 = 0;
+            Barycentric(new Point(x, y), point_list[0], point_list[1], point_list[2], ref f1, ref f2, ref f3);
+            ColorDouble color = f1 * color_list[0] + f2 * color_list[1] + f3 * color_list[2];
+            return color;
+        }
+        public static ColorDouble Phong(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
+        {
+            double f1 = 0; double f2 = 0; double f3 = 0;
+            Barycentric(new Point(x, y), point_list[0], point_list[1], point_list[2], ref f1, ref f2, ref f3);
+            var color = f.ka * poly_color;
+            var normal_vector = (f1 * normals[0] + f2 * normals[1] + f3 * normals[2]).Normalize(1);
+            var view_vector = (f1 * points_3d[0] + f2 * points_3d[1] + f3 * points_3d[2]).Normalize(1);
+            for (int j = 0; j < lights.Count; j++)
+            {
+                var light_vector = (lights[j].position - view_vector).Normalize(1);
+                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector).Normalize(1);
+                color += f.kd * normal_vector.DotProduct(light_vector) * lights[j].color;
+                color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * lights[j].color;
+            }
+            return color;
+        }
+        public static bool AreCollinear(List<Point> points)
+        {
+            return ((points[2].Y - points[1].Y) * (points[1].X - points[0].X) == (points[1].Y - points[0].Y) * (points[2].X - points[1].X));
         }
     }
 }

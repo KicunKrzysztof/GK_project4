@@ -13,10 +13,12 @@ namespace _3d_basic
     {
         public Vector<double>[] points;
         public Face[] faces;
+        public Vector<double>[] normals;
         public Color color;
         public Matrix<double> model_matrix;
         public double x, y, z;
         public double angle_x, angle_y, angle_z;
+        public SurfaceFactors factors;
 
         public Mesh(Color col, double _x, double _y, double _z, double ax, double ay, double az)
         {
@@ -24,8 +26,9 @@ namespace _3d_basic
             color = col;
             angle_x = ax; angle_y = ay; angle_z = az;
             x = _x; y = _y; z = _z;
+            factors = new SurfaceFactors();
         }
-        public Mesh(Color col, double _x, double _y, double _z, double ax, double ay, double az, Vector<double>[] _points, Face[] _faces)
+        public Mesh(Color col, double _x, double _y, double _z, double ax, double ay, double az, Vector<double>[] _points, Face[] _faces, Vector<double>[] _normals)
         {
             model_matrix = CreateMatrix.DenseIdentity<double>(4);
             color = col;
@@ -33,6 +36,8 @@ namespace _3d_basic
             x = _x; y = _y; z = _z;
             points = _points;
             faces = _faces;
+            normals = _normals;
+            factors = new SurfaceFactors();
         }
         public void RotationX(double delta_angle)
         {
@@ -78,6 +83,16 @@ namespace _3d_basic
             });
             model_matrix = translation_matrix * model_matrix;
         }
+        public void Scale(double _x, double _y, double _z)
+        {
+            Matrix<double> scale_matrix = CreateMatrix.DenseOfArray(new double[,] {
+                {_x, 0, 0, 0},
+                {0, _y, 0, 0},
+                {0, 0, _z, 0},
+                {0, 0, 0, 1}
+            });
+            model_matrix = scale_matrix * model_matrix;
+        }
         public void ResetModelMatrix()
         {
             model_matrix = CreateMatrix.DenseIdentity<double>(4);
@@ -87,10 +102,24 @@ namespace _3d_basic
     {
         public int[] indexes;
         public Color? color;
-        public Face (int aa, int bb, int cc, Color? c)
+        public Face(int aa, int bb, int cc, Color? c)
         {
             indexes = new int[] { aa, bb, cc };
             color = c;
+        }
+    }
+    class SurfaceFactors
+    {
+        public double ka;
+        public double kd;
+        public double ks;
+        public int n;
+        public SurfaceFactors()
+        {
+            ka = 0.15;//0.15;
+            kd = 0.2;// 0.5;
+            ks = 1;
+            n = 10;
         }
     }
 }

@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ColorDouble.cs" />
     <Compile Include="CrossProduct.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="DirectBitmapa.cs" />
@@ -66,6 +67,7 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Light.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
