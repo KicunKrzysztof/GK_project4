@@ -14,7 +14,7 @@ namespace _3d_basic
         public IList<double> normals { get; set; }
         public IList<int> indices { get; set; }
 
-        public Mesh ConvertToMesh(Color col, double _x, double _y, double _z, double ax, double ay, double az)
+        public Mesh ConvertToMesh(Color col, double ax, double ay, double az)
         {
             List<Vector<double>> points = new List<Vector<double>>();
             List<Vector<double>> normal = new List<Vector<double>>();
@@ -26,7 +26,7 @@ namespace _3d_basic
             }
             for(int i = 0; i < indices.Count; i+=3)
                 faces.Add(new Face(indices[i], indices[i + 1], indices[i + 2], null));
-            return new Mesh(col, _x, _y, _z, ax, ay, az, points.ToArray(), faces.ToArray(), normal.ToArray());
+            return new Mesh(col, ax, ay, az, points.ToArray(), faces.ToArray(), normal.ToArray());
         }
     }
 }

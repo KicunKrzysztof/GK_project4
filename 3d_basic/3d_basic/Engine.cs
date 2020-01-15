@@ -28,6 +28,8 @@ namespace _3d_basic
         private const int z_depth = 10000;
         private List<Light> lights;
         public BackgroundWorker bgr_worker;
+        private double current_angle, r;
+        private Vector<double> static_camera_position = CreateVector.DenseOfArray(new double[] { 0, 5, 30 });
         public Engine(PictureBox _p_box, BackgroundWorker _bgr_worker) 
         {
             bgr_worker = _bgr_worker;
@@ -35,13 +37,16 @@ namespace _3d_basic
             btm = new DirectBitmap(p_box.Width, p_box.Height);
             p_box.Image = btm.Bitmap;
             z_buf = new int[p_box.Width, p_box.Height];
-            lights = new List<Light>() { new Light(CreateVector.DenseOfArray(new double[] { 0, 5, 3, 0 }), ColorDouble.CreateFromColor(Color.White)) };
+            lights = new List<Light>() { new Light(CreateVector.DenseOfArray(new double[] { 0, 1, 0, 0 }), ColorDouble.CreateFromColor(Color.White)),
+            Light.CreateSpotlight(CreateVector.DenseOfArray(new double[]{ -0.5, -0.5, 10, 0 }), ColorDouble.CreateFromColor(Color.White), CreateVector.DenseOfArray(new double[]{ 0, 0, 0, 1 }), 0.7, 10) };
             FlushBuf();
             SetTimer(1);
             a = (double)p_box.Height / p_box.Width;
             FillProjectionMatrix();
-            LookAt(CreateVector.DenseOfArray(new double[] {0, 0, 12}), CreateVector.DenseOfArray(new double[] {0,0,0 }));
+            LookAt(static_camera_position, CreateVector.DenseOfArray(new double[] {0,0,0 }));
             InitializeMeshes();
+            current_angle = 0;
+            r = 8;
         }
 
         private void InitializeMeshes()
@@ -49,13 +54,13 @@ namespace _3d_basic
             meshes = new List<Mesh>();
             var json_sphere = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\sphere_test3.babylon");
             var json_cube = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\cube2.babylon");
+            var json_monkey = File.ReadAllText("C:\\Users\\Krzys\\Documents\\ksiazki5\\gk\\monkey.babylon");
             SimpleBabylon sphere = JsonConvert.DeserializeObject<SimpleBabylon>(json_sphere);
             SimpleBabylon cube = JsonConvert.DeserializeObject<SimpleBabylon>(json_cube);
-            //meshes.Add(sphere.ConvertToMesh(Color.Blue, 0, 0, 0, 0, 0, 0));
-            meshes.Add(cube.ConvertToMesh(Color.Green, 0, 0, 0, 0, 0, 0));
-            //meshes.Add(cube.ConvertToMesh(Color.Red, 0, 0, 0, 0, 0, 0));
-            //meshes.Add( new Cube(Color.Red, -0.5, -0.5, -0.5, 0,0,0));
-            //meshes.Add(new Cube(Color.Red, -1, -1, -1, 0,0,0));
+            SimpleBabylon monkey = JsonConvert.DeserializeObject<SimpleBabylon>(json_monkey);
+            meshes.Add(sphere.ConvertToMesh(Color.White, 0, 0, 0));
+            meshes.Add(cube.ConvertToMesh(Color.Green, 0, 0, 0));
+            //meshes.Add(monkey.ConvertToMesh(Color.Brown, 0, 0, 0));
         }
 
         public void FillProjectionMatrix()
@@ -110,6 +115,7 @@ namespace _3d_basic
             List<Vector<double>> converted_normals = new List<Vector<double>>();
             List<Vector<double>> converted_camera_points = new List<Vector<double>>();
             List<Vector<double>> converted_light_positions = new List<Vector<double>>();
+            List<Vector<double>> converted_spotlight_directions = new List<Vector<double>>();
             Matrix<double> inversed_model_matrix = m.model_matrix.Inverse();
             for (int i = 0; i < m.points.Length; i++)
             {
@@ -120,15 +126,33 @@ namespace _3d_basic
             }
             for (int i = 0; i < lights.Count; i++)
             {
-                converted_light_positions.Add(view_matrix * lights[i].world_position);
+                if(!lights[i].spotlight)
+                {
+                    converted_light_positions.Add(view_matrix * lights[i].world_position);
+                    converted_spotlight_directions.Add(null);
+                }  
+                else if (lights[i].spotlight)
+                {
+                    converted_light_positions.Add(view_matrix * lights[i].world_position);
+                    converted_spotlight_directions.Add(view_matrix * lights[i].world_direction);
+                }
             }
-            SetLights(converted_light_positions);
+            SetLights(converted_light_positions, converted_spotlight_directions);
             foreach (Face face in m.faces)
             {
                 Color _color = (Color)(face.color == null ? m.color : face.color);
                 var color = ColorDouble.CreateFromColor(_color);
-                FillPolyHelper.FillPolygon(GetPolyFromFace(face, converted_points), GetFaceZ(face, converted_points), GetFaceNormals(face, converted_normals), GetFace3dPoints(face, converted_camera_points), lights, z_buf,  color, m.factors, btm);
+                FillPolyHelper.FillPolygon(GetPolyFromFace(face, converted_points), GetFaceZ(face, converted_points), GetFaceNormals(face, converted_normals), GetFace3dPoints(face, converted_camera_points), lights, z_buf,  color, m.factors, btm, FillPolyHelper.Phong);
             }
+        }
+        public List<Vector<double>> GetFace2dPoints(Face face, List<Vector<double>> converted_points)
+        {
+            var poly = new List<Vector<double>>();
+            foreach (int index in face.indexes)
+            {
+                poly.Add(CreateVector.DenseOfArray(new double[] { converted_points[index][0], converted_points[index][1], converted_points[index][2] }));
+            }
+            return poly;
         }
         private List<Point> GetPolyFromFace(Face face, List<Vector<double>> points)
         {
@@ -145,12 +169,6 @@ namespace _3d_basic
                 (int)(points[index][1] * (-btm.Height / 2) + btm.Height / 2));
         }
 
-        /// <summary>
-        /// Compute value of z-bufor in face's vertexes
-        /// </summary>
-        /// <param name="face"></param>
-        /// <param name="points"></param>
-        /// <returns></returns>
         private List<int> GetFaceZ(Face face, List<Vector<double>> points)
         {
             var z_list = new List<int>();
@@ -172,26 +190,36 @@ namespace _3d_basic
                 points_list.Add(CreateVector.DenseOfArray(new double[] { converted_points[index][0], converted_points[index][1], converted_points[index][2] }));
             return points_list;
         }
-        private void SetLights(List<Vector<double>> converted_lights_points)
+        private void SetLights(List<Vector<double>> converted_lights_points, List<Vector<double>> converted_spotlight_directions)
         {
             for(int i = 0; i < lights.Count; i++)
             {
-                lights[i].position = CreateVector.DenseOfArray(new double[]{ converted_lights_points[i][0], converted_lights_points[i][1], converted_lights_points[i][2]});
+                if (!lights[i].spotlight)
+                    lights[i].position = CreateVector.DenseOfArray(new double[]{ converted_lights_points[i][0], converted_lights_points[i][1], converted_lights_points[i][2]});
+                else if(lights[i].spotlight)
+                {
+                    lights[i].position = CreateVector.DenseOfArray(new double[] { converted_lights_points[i][0], converted_lights_points[i][1], converted_lights_points[i][2] });
+                    lights[i].direction = (CreateVector.DenseOfArray(new double[] { converted_spotlight_directions[i][0], converted_spotlight_directions[i][1], converted_spotlight_directions[i][2] })).Normalize(1);
+                }
             }
         }
-        private void Logic()
+        private void Logic()//[0]sphere, [1]cube
         {
             meshes[0].ResetModelMatrix();
-            //meshes[1].ResetModelMatrix();  
-            //meshes[0].RotationY(0.1);
-            meshes[0].RotationX(0.01);
-            //meshes[0].Scale(2, 2, 2);
-            //meshes[0].Translation(0, 0.01, 0);
-            //meshes[0].Translation(0, 0, 0);
+            meshes[1].ResetModelMatrix();
+            current_angle += 0.05;
+            double dz = Math.Sin(current_angle) * r;
+            double dx = Math.Cos(current_angle) * r;
+            meshes[0].Translation(dx, 0, dz);
+            meshes[1].RotationX(0.02);
+            meshes[1].RotationY(0.02);
+            meshes[1].RotationZ(0.02);
+            LookAt(static_camera_position, CreateVector.DenseOfArray(new double[] { dx, 0, dz }));
 
-            //meshes[0].RotationX(0.03);
-            meshes[0].RotationY(0.01);
-            meshes[0].RotationZ(0.02);
+            //meshes[0].ResetModelMatrix();
+            //meshes[0].Scale(4, 4, 4);
+            //meshes[0].RotationY(0.1);
+            //meshes[0].RotationX(0.05);
         }
         private void VanishBitmap()
         {
@@ -212,12 +240,6 @@ namespace _3d_basic
             });
             inversed_view_matrix = tmp_matrix;
             view_matrix = tmp_matrix.Inverse();
-        }
-        public void TestFill()
-        {
-            //FillPolyHelper.FillPolygon(new List<Point>() { new Point(0, 0), new Point(btm.Width, 0), new Point(btm.Width, btm.Height), new Point(0, btm.Height) }, null, null, Color.White, btm);
-            throw (new NotImplementedException("nie z się"));
-            //p_box.Refresh();
         }
     }
 }

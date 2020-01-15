@@ -11,7 +11,7 @@ namespace _3d_basic
 {
     class Cube:Mesh
     {
-        public Cube(Color col, double _x, double _y, double _z, double ax, double ay, double az):base(col,_x, _y, _z, ax, ay, az)
+        public Cube(Color col, double ax, double ay, double az):base(col, ax, ay, az)
         {
             points = new DenseVector[] {
                         new DenseVector(new double[] { 0,0,0,1}),

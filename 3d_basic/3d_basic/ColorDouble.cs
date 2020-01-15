@@ -18,9 +18,9 @@ namespace _3d_basic
         }
         public Color GetColor()
         {
-            r = Math.Max(Math.Min(1, r), 0);
-            g = Math.Max(Math.Min(1, g), 0);
-            b = Math.Max(Math.Min(1, b), 0);
+            r = Math.Max(Math.Min(1.0, r), 0);
+            g = Math.Max(Math.Min(1.0, g), 0);
+            b = Math.Max(Math.Min(1.0, b), 0);
             return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
         }
         public static ColorDouble operator *(double factor, ColorDouble color)

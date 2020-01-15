@@ -11,7 +11,8 @@ namespace _3d_basic
 {
     class FillPolyHelper
     {
-        public static void FillPolygon(List<Point> poly_list, List<int> z_list, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, int[,] z_bufor, ColorDouble poly_color, SurfaceFactors surface_factors, DirectBitmap btm)
+        public static void FillPolygon(List<Point> poly_list, List<int> z_list, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, int[,] z_bufor, ColorDouble poly_color, SurfaceFactors surface_factors, DirectBitmap btm, 
+            Func<int, int, List<Point>, List<ColorDouble>, SurfaceFactors, ColorDouble, List<Vector<double>>, List<Vector<double>>, List<Light>, ColorDouble, ColorDouble> ShadingFunc)
         {
             if (PolyOutOfBtm(poly_list, btm))
                 return;
@@ -22,17 +23,14 @@ namespace _3d_basic
             foreach (var normal in normals)
                 sum_normal_vector += CreateVector.DenseOfArray(new double[] { normal[0], normal[1], normal[2] });
             foreach (var vertex in points_3d)
-                sum_view_vector += CreateVector.DenseOfArray(new double[] { vertex[0], vertex[1], vertex[2] });
-            sum_view_vector = sum_view_vector.Normalize(1);
-            sum_normal_vector = sum_normal_vector.Normalize(1);
-            var test = sum_view_vector.DotProduct(sum_normal_vector);
-            if (sum_view_vector.DotProduct(sum_normal_vector) > 0.3)
+                sum_view_vector += -(CreateVector.DenseOfArray(new double[] { vertex[0], vertex[1], vertex[2] }));
+            if (sum_view_vector.Normalize(1).DotProduct(sum_normal_vector.Normalize(1)) < -0.3)
                 return;
             var vertex_colors = new List<ColorDouble>();
             for (int i = 0; i < poly_list.Count; i++)
-            {
-                vertex_colors.Add(Phong(poly_list[i].X, poly_list[i].Y, poly_list, null, surface_factors, poly_color, normals, points_3d, lights));
-            }
+                vertex_colors.Add(Phong(poly_list[i].X, poly_list[i].Y, poly_list, null, surface_factors, poly_color, normals, points_3d, lights, null));
+
+            ColorDouble constant_shading_color = ColorForConstanShading(surface_factors, poly_color, normals, points_3d, lights);
 
             Point[] poly = new List<Point>(poly_list).ToArray();
             int[] idx = Enumerable.Range(0, poly.Length).ToArray();
@@ -86,8 +84,7 @@ namespace _3d_basic
                         int tmp_z_value = ComputeZFrorPoint(poly_list, z_list, x, boundaries.Item1);
                         if (z_bufor[x, boundaries.Item1] > tmp_z_value)
                         {
-                            var c = Gouraud(x, boundaries.Item1, poly_list, vertex_colors,null, null, null, null, null);
-                            //var c = Phong(x, boundaries.Item1, poly_list, null, surface_factors, poly_color, normals, points_3d, lights);
+                            var c = ShadingFunc(x, boundaries.Item1, poly_list, vertex_colors, surface_factors, poly_color, normals, points_3d, lights, constant_shading_color);
                             btm.SetPixel(x, boundaries.Item1, c.GetColor());
                             z_bufor[x, boundaries.Item1] = tmp_z_value;
                         }
@@ -113,7 +110,6 @@ namespace _3d_basic
                 return e1.x > e2.x ? 1 : -1;
             }
         }
-
         public static int ComputeZFrorPoint(List<Point> poly, List<int> z_list, int x, int y)
         {
             double u = 0, v = 0, w = 0;
@@ -121,8 +117,6 @@ namespace _3d_basic
             Barycentric(p, poly[0], poly[1], poly[2], ref u, ref v, ref w);
             return (int)(u * z_list[0] + v * z_list[1] + w * z_list[2]);
         }
-        //Compute barycentric coordinates(u, v, w) for
-        // point p with respect to triangle(a, b, c)
         public static void Barycentric(Point p, Point a, Point b, Point c, ref double u, ref double v, ref double w)
         {
             Vector<double> v0 = CreateVector.DenseOfArray(new double[] { b.X - a.X, b.Y - a.Y });
@@ -138,14 +132,6 @@ namespace _3d_basic
             w = (d00 * d21 - d01 * d20) / denom;
             u = 1.0f - v - w;
         }
-        //static public void Barycentric(Point p, Point a, Point b, Point c, ref double factor1, ref double factor2, ref double factor3)
-        //{
-        //    factor1 = ((b.Y - c.Y) * (p.X - c.X) + (c.X - b.X) * (p.Y - c.Y)) / (double)((b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y));
-        //    factor2 = ((c.Y - a.Y) * (p.X - c.X) + (a.X - c.X) * (p.Y - c.Y)) / (double)((b.Y - c.Y) * (a.X - c.X) + (c.X - b.X) * (a.Y - c.Y));
-        //    factor3 = 1 - factor1 - factor2;
-        //    if (Double.IsNaN(factor1))
-        //        Console.WriteLine("kupa");
-        //}
         public static bool OnBitmap(int x, int y, int btm_x, int btm_y)
         {
             if (x < 0 || y < 0 || x >= btm_x || y >= btm_y)
@@ -159,32 +145,65 @@ namespace _3d_basic
                     return false;
             return true; ;
         }
-        public static ColorDouble Gouraud(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
+        public static ColorDouble Gouraud(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, ColorDouble constant_shading_color)
         {
             double f1 = 0; double f2 = 0; double f3 = 0;
             Barycentric(new Point(x, y), point_list[0], point_list[1], point_list[2], ref f1, ref f2, ref f3);
             ColorDouble color = f1 * color_list[0] + f2 * color_list[1] + f3 * color_list[2];
             return color;
         }
-        public static ColorDouble Phong(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
+        public static ColorDouble Phong(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, ColorDouble constant_shading_color)
         {
             double f1 = 0; double f2 = 0; double f3 = 0;
             Barycentric(new Point(x, y), point_list[0], point_list[1], point_list[2], ref f1, ref f2, ref f3);
             var color = f.ka * poly_color;
             var normal_vector = (f1 * normals[0] + f2 * normals[1] + f3 * normals[2]).Normalize(1);
-            var view_vector = (f1 * points_3d[0] + f2 * points_3d[1] + f3 * points_3d[2]).Normalize(1);
+            var view_vector = -(f1 * points_3d[0] + f2 * points_3d[1] + f3 * points_3d[2]).Normalize(1);
             for (int j = 0; j < lights.Count; j++)
             {
-                var light_vector = (lights[j].position - view_vector).Normalize(1);
+                var light_vector = (view_vector + lights[j].position.Normalize(1)).Normalize(1);
                 var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector).Normalize(1);
-                color += f.kd * normal_vector.DotProduct(light_vector) * lights[j].color;
-                color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * lights[j].color;
+                var local_light_color = ColorDouble.CreateFromColor(Color.Black);
+                if (lights[j].spotlight && (-light_vector).DotProduct(lights[j].direction) > lights[j].cutoff)
+                    local_light_color += Math.Pow((-light_vector).DotProduct(lights[j].direction), lights[j].n) * lights[j].color;
+                else if (!lights[j].spotlight)
+                    local_light_color = lights[j].color;
+                if(normal_vector.DotProduct(light_vector) > 0)
+                    color += f.kd * normal_vector.DotProduct(light_vector) * local_light_color;
+                if(view_vector.DotProduct(reflect_vector) > 0)
+                    color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * local_light_color;
             }
             return color;
+        }
+
+        public static ColorDouble ConstantShading(int x, int y, List<Point> point_list, List<ColorDouble> color_list, SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights, ColorDouble constant_shading_color)
+        {
+            return constant_shading_color;
         }
         public static bool AreCollinear(List<Point> points)
         {
             return ((points[2].Y - points[1].Y) * (points[1].X - points[0].X) == (points[1].Y - points[0].Y) * (points[2].X - points[1].X));
+        }
+        public static ColorDouble ColorForConstanShading(SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
+        {
+            var color = f.ka * poly_color;
+            var normal_vector = (normals[0] + normals[1] + normals[2]).Normalize(1);
+            var view_vector = -(points_3d[0] + points_3d[1] + points_3d[2]).Normalize(1);
+            for (int j = 0; j < lights.Count; j++)
+            {
+                var light_vector = (view_vector + lights[j].position.Normalize(1)).Normalize(1);
+                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector).Normalize(1);
+                var local_light_color = ColorDouble.CreateFromColor(Color.Black);
+                if (lights[j].spotlight && (-light_vector).DotProduct(lights[j].direction) > lights[j].cutoff)
+                    local_light_color += Math.Pow((-light_vector).DotProduct(lights[j].direction), lights[j].n) * lights[j].color;
+                else if (!lights[j].spotlight)
+                    local_light_color = lights[j].color;
+                if (normal_vector.DotProduct(light_vector) > 0)
+                    color += f.kd * normal_vector.DotProduct(light_vector) * local_light_color;
+                if (view_vector.DotProduct(reflect_vector) > 0)
+                    color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * local_light_color;
+            }
+            return color;
         }
     }
 }
