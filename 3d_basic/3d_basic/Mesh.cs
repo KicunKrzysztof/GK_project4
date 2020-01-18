@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
-//using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace _3d_basic
 {
@@ -17,14 +16,12 @@ namespace _3d_basic
         public Color color;
         public Matrix<double> model_matrix;
         public double angle_x, angle_y, angle_z;
-        public SurfaceFactors factors;
 
         public Mesh(Color col, double ax, double ay, double az)
         {
             model_matrix = CreateMatrix.DenseIdentity<double>(4);
             color = col;
             angle_x = ax; angle_y = ay; angle_z = az;
-            factors = new SurfaceFactors();
         }
         public Mesh(Color col, double ax, double ay, double az, Vector<double>[] _points, Face[] _faces, Vector<double>[] _normals)
         {
@@ -34,7 +31,6 @@ namespace _3d_basic
             points = _points;
             faces = _faces;
             normals = _normals;
-            factors = new SurfaceFactors();
         }
         public void RotationX(double delta_angle)
         {
@@ -98,6 +94,7 @@ namespace _3d_basic
     {
         public int[] indexes;
         public Color? color;
+        public SurfaceFactors surface_factors;
         public Face(int aa, int bb, int cc, Color? c)
         {
             indexes = new int[] { aa, bb, cc };
@@ -109,13 +106,7 @@ namespace _3d_basic
         public double ka;
         public double kd;
         public double ks;
-        public int n;
-        public SurfaceFactors()
-        {
-            ka = 0.15;//0.15;
-            kd = 0.5;// 0.5;
-            ks = 1;
-            n = 10;
-        }
+        public double n;
+        public SurfaceFactors(){}
     }
 }

@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using MathNet.Numerics.LinearAlgebra;
-//using System.Linq;
 
 namespace _3d_basic
 {
@@ -24,7 +23,7 @@ namespace _3d_basic
                 sum_normal_vector += CreateVector.DenseOfArray(new double[] { normal[0], normal[1], normal[2] });
             foreach (var vertex in points_3d)
                 sum_view_vector += -(CreateVector.DenseOfArray(new double[] { vertex[0], vertex[1], vertex[2] }));
-            if (sum_view_vector.Normalize(1).DotProduct(sum_normal_vector.Normalize(1)) < -0.3)
+            if (sum_view_vector.Normalize(2).DotProduct(sum_normal_vector.Normalize(2)) < -0.3)
                 return;
             var vertex_colors = new List<ColorDouble>();
             for (int i = 0; i < poly_list.Count; i++)
@@ -157,21 +156,22 @@ namespace _3d_basic
             double f1 = 0; double f2 = 0; double f3 = 0;
             Barycentric(new Point(x, y), point_list[0], point_list[1], point_list[2], ref f1, ref f2, ref f3);
             var color = f.ka * poly_color;
-            var normal_vector = (f1 * normals[0] + f2 * normals[1] + f3 * normals[2]).Normalize(1);
-            var view_vector = -(f1 * points_3d[0] + f2 * points_3d[1] + f3 * points_3d[2]).Normalize(1);
+            var normal_vector = (f1 * normals[0] + f2 * normals[1] + f3 * normals[2]).Normalize(2);
+            var view_vector = -(f1 * points_3d[0] + f2 * points_3d[1] + f3 * points_3d[2]);
+            var view_vector_normalize = view_vector.Normalize(2);
             for (int j = 0; j < lights.Count; j++)
             {
-                var light_vector = (view_vector + lights[j].position.Normalize(1)).Normalize(1);
-                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector).Normalize(1);
+                var light_vector = (view_vector + lights[j].position).Normalize(2);
+                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector);
                 var local_light_color = ColorDouble.CreateFromColor(Color.Black);
                 if (lights[j].spotlight && (-light_vector).DotProduct(lights[j].direction) > lights[j].cutoff)
                     local_light_color += Math.Pow((-light_vector).DotProduct(lights[j].direction), lights[j].n) * lights[j].color;
                 else if (!lights[j].spotlight)
                     local_light_color = lights[j].color;
-                if(normal_vector.DotProduct(light_vector) > 0)
+                if (normal_vector.DotProduct(light_vector) > 0)
                     color += f.kd * normal_vector.DotProduct(light_vector) * local_light_color;
-                if(view_vector.DotProduct(reflect_vector) > 0)
-                    color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * local_light_color;
+                if (view_vector_normalize.DotProduct(reflect_vector) > 0)
+                    color += f.ks * Math.Pow(view_vector_normalize.DotProduct(reflect_vector), f.n) * local_light_color;
             }
             return color;
         }
@@ -187,12 +187,13 @@ namespace _3d_basic
         public static ColorDouble ColorForConstanShading(SurfaceFactors f, ColorDouble poly_color, List<Vector<double>> normals, List<Vector<double>> points_3d, List<Light> lights)
         {
             var color = f.ka * poly_color;
-            var normal_vector = (normals[0] + normals[1] + normals[2]).Normalize(1);
-            var view_vector = -(points_3d[0] + points_3d[1] + points_3d[2]).Normalize(1);
+            var normal_vector = (normals[0] + normals[1] + normals[2]).Normalize(2);
+            var view_vector = -(points_3d[0] + points_3d[1] + points_3d[2]).Multiply(1.0/3.0);
+            var view_vector_normalized = view_vector.Normalize(2);
             for (int j = 0; j < lights.Count; j++)
             {
-                var light_vector = (view_vector + lights[j].position.Normalize(1)).Normalize(1);
-                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector).Normalize(1);
+                var light_vector = (view_vector + lights[j].position).Normalize(2);
+                var reflect_vector = (2 * light_vector.DotProduct(normal_vector) * normal_vector - light_vector);
                 var local_light_color = ColorDouble.CreateFromColor(Color.Black);
                 if (lights[j].spotlight && (-light_vector).DotProduct(lights[j].direction) > lights[j].cutoff)
                     local_light_color += Math.Pow((-light_vector).DotProduct(lights[j].direction), lights[j].n) * lights[j].color;
@@ -200,8 +201,8 @@ namespace _3d_basic
                     local_light_color = lights[j].color;
                 if (normal_vector.DotProduct(light_vector) > 0)
                     color += f.kd * normal_vector.DotProduct(light_vector) * local_light_color;
-                if (view_vector.DotProduct(reflect_vector) > 0)
-                    color += f.ks * Math.Pow(view_vector.DotProduct(reflect_vector), f.n) * local_light_color;
+                if (view_vector_normalized.DotProduct(reflect_vector) > 0)
+                    color += f.ks * Math.Pow(view_vector_normalized.DotProduct(reflect_vector), f.n) * local_light_color;
             }
             return color;
         }
