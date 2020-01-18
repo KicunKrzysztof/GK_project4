@@ -42,29 +42,29 @@
             this.PhongRadioButton = new System.Windows.Forms.RadioButton();
             this.GouraudRadioButton = new System.Windows.Forms.RadioButton();
             this.ConstantShadingRadioButton = new System.Windows.Forms.RadioButton();
-            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
-            this.label1 = new System.Windows.Forms.Label();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.kaTrackBar = new System.Windows.Forms.TrackBar();
-            this.kdTrackBar = new System.Windows.Forms.TrackBar();
-            this.ksTrackBar = new System.Windows.Forms.TrackBar();
-            this.nTrackBar = new System.Windows.Forms.TrackBar();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.kalabel = new System.Windows.Forms.Label();
-            this.kdlabel = new System.Windows.Forms.Label();
-            this.kslabel = new System.Windows.Forms.Label();
-            this.nlabel = new System.Windows.Forms.Label();
-            this.spotlightAngleTrackBar = new System.Windows.Forms.TrackBar();
-            this.spotlightNTrackBar = new System.Windows.Forms.TrackBar();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.spotlightAngleLabel = new System.Windows.Forms.Label();
             this.spotlightNLabel = new System.Windows.Forms.Label();
+            this.spotlightAngleLabel = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.spotlightNTrackBar = new System.Windows.Forms.TrackBar();
+            this.spotlightAngleTrackBar = new System.Windows.Forms.TrackBar();
+            this.nlabel = new System.Windows.Forms.Label();
+            this.kslabel = new System.Windows.Forms.Label();
+            this.kdlabel = new System.Windows.Forms.Label();
+            this.kalabel = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.nTrackBar = new System.Windows.Forms.TrackBar();
+            this.ksTrackBar = new System.Windows.Forms.TrackBar();
+            this.kdTrackBar = new System.Windows.Forms.TrackBar();
+            this.kaTrackBar = new System.Windows.Forms.TrackBar();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.backgroundWorker1 = new System.ComponentModel.BackgroundWorker();
             this.MainLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -72,14 +72,14 @@
             this.groupBox2.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
-            this.groupBox6.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.kaTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.spotlightAngleTrackBar)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.spotlightNTrackBar)).BeginInit();
             this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spotlightNTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spotlightAngleTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kaTrackBar)).BeginInit();
+            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainLayoutPanel
@@ -183,10 +183,10 @@
             this.BoundedCameraRadioButton.AutoSize = true;
             this.BoundedCameraRadioButton.Location = new System.Drawing.Point(6, 75);
             this.BoundedCameraRadioButton.Name = "BoundedCameraRadioButton";
-            this.BoundedCameraRadioButton.Size = new System.Drawing.Size(86, 21);
+            this.BoundedCameraRadioButton.Size = new System.Drawing.Size(89, 21);
             this.BoundedCameraRadioButton.TabIndex = 2;
             this.BoundedCameraRadioButton.TabStop = true;
-            this.BoundedCameraRadioButton.Text = "Bounded";
+            this.BoundedCameraRadioButton.Text = "Związana";
             this.BoundedCameraRadioButton.UseVisualStyleBackColor = true;
             this.BoundedCameraRadioButton.Click += new System.EventHandler(this.BoundedCameraRadioButton_Click);
             // 
@@ -265,20 +265,6 @@
             this.ConstantShadingRadioButton.UseVisualStyleBackColor = true;
             this.ConstantShadingRadioButton.Click += new System.EventHandler(this.ConstantShadingRadioButton_Click);
             // 
-            // backgroundWorker1
-            // 
-            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
-            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 28);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(46, 17);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "label1";
-            // 
             // groupBox4
             // 
             this.groupBox4.CausesValidation = false;
@@ -303,155 +289,6 @@
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Współczynniki";
             // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.label1);
-            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox6.Location = new System.Drawing.Point(3, 636);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(288, 108);
-            this.groupBox6.TabIndex = 6;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Klatki na sekundę";
-            // 
-            // kaTrackBar
-            // 
-            this.kaTrackBar.Location = new System.Drawing.Point(6, 21);
-            this.kaTrackBar.Maximum = 100;
-            this.kaTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.kaTrackBar.Name = "kaTrackBar";
-            this.kaTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.kaTrackBar.TabIndex = 0;
-            this.kaTrackBar.Value = 15;
-            this.kaTrackBar.ValueChanged += new System.EventHandler(this.kaTrackBar_ValueChanged);
-            // 
-            // kdTrackBar
-            // 
-            this.kdTrackBar.Location = new System.Drawing.Point(6, 57);
-            this.kdTrackBar.Maximum = 100;
-            this.kdTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.kdTrackBar.Name = "kdTrackBar";
-            this.kdTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.kdTrackBar.TabIndex = 1;
-            this.kdTrackBar.Value = 20;
-            this.kdTrackBar.ValueChanged += new System.EventHandler(this.kdTrackBar_ValueChanged);
-            // 
-            // ksTrackBar
-            // 
-            this.ksTrackBar.Location = new System.Drawing.Point(6, 93);
-            this.ksTrackBar.Maximum = 100;
-            this.ksTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.ksTrackBar.Name = "ksTrackBar";
-            this.ksTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.ksTrackBar.TabIndex = 2;
-            this.ksTrackBar.Value = 50;
-            this.ksTrackBar.ValueChanged += new System.EventHandler(this.ksTrackBar_ValueChanged);
-            // 
-            // nTrackBar
-            // 
-            this.nTrackBar.Location = new System.Drawing.Point(6, 129);
-            this.nTrackBar.Maximum = 200;
-            this.nTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.nTrackBar.Name = "nTrackBar";
-            this.nTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.nTrackBar.TabIndex = 3;
-            this.nTrackBar.Value = 20;
-            this.nTrackBar.ValueChanged += new System.EventHandler(this.nTrackBar_ValueChanged);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(162, 21);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(27, 17);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "ka:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(162, 57);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(27, 17);
-            this.label3.TabIndex = 5;
-            this.label3.Text = "kd:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(162, 93);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(26, 17);
-            this.label4.TabIndex = 6;
-            this.label4.Text = "ks:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(162, 129);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(20, 17);
-            this.label5.TabIndex = 7;
-            this.label5.Text = "n:";
-            // 
-            // kalabel
-            // 
-            this.kalabel.AutoSize = true;
-            this.kalabel.Location = new System.Drawing.Point(214, 21);
-            this.kalabel.Name = "kalabel";
-            this.kalabel.Size = new System.Drawing.Size(36, 17);
-            this.kalabel.TabIndex = 8;
-            this.kalabel.Text = "0.15";
-            // 
-            // kdlabel
-            // 
-            this.kdlabel.AutoSize = true;
-            this.kdlabel.Location = new System.Drawing.Point(214, 57);
-            this.kdlabel.Name = "kdlabel";
-            this.kdlabel.Size = new System.Drawing.Size(36, 17);
-            this.kdlabel.TabIndex = 9;
-            this.kdlabel.Text = "0.20";
-            // 
-            // kslabel
-            // 
-            this.kslabel.AutoSize = true;
-            this.kslabel.Location = new System.Drawing.Point(214, 93);
-            this.kslabel.Name = "kslabel";
-            this.kslabel.Size = new System.Drawing.Size(36, 17);
-            this.kslabel.TabIndex = 10;
-            this.kslabel.Text = "0.50";
-            // 
-            // nlabel
-            // 
-            this.nlabel.AutoSize = true;
-            this.nlabel.Location = new System.Drawing.Point(214, 129);
-            this.nlabel.Name = "nlabel";
-            this.nlabel.Size = new System.Drawing.Size(24, 17);
-            this.nlabel.TabIndex = 11;
-            this.nlabel.Text = "20";
-            // 
-            // spotlightAngleTrackBar
-            // 
-            this.spotlightAngleTrackBar.Location = new System.Drawing.Point(6, 21);
-            this.spotlightAngleTrackBar.Maximum = 900;
-            this.spotlightAngleTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.spotlightAngleTrackBar.Name = "spotlightAngleTrackBar";
-            this.spotlightAngleTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.spotlightAngleTrackBar.TabIndex = 12;
-            this.spotlightAngleTrackBar.Value = 515;
-            this.spotlightAngleTrackBar.ValueChanged += new System.EventHandler(this.spotlightAngleTrackBar_ValueChanged);
-            // 
-            // spotlightNTrackBar
-            // 
-            this.spotlightNTrackBar.Location = new System.Drawing.Point(6, 57);
-            this.spotlightNTrackBar.Maximum = 200;
-            this.spotlightNTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
-            this.spotlightNTrackBar.Name = "spotlightNTrackBar";
-            this.spotlightNTrackBar.Size = new System.Drawing.Size(150, 30);
-            this.spotlightNTrackBar.TabIndex = 13;
-            this.spotlightNTrackBar.Value = 10;
-            this.spotlightNTrackBar.ValueChanged += new System.EventHandler(this.spotlightNTrackBar_ValueChanged);
-            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.spotlightNLabel);
@@ -467,23 +304,14 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Reflektor";
             // 
-            // label6
+            // spotlightNLabel
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(156, 21);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(31, 17);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "kąt:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(156, 57);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(20, 17);
-            this.label7.TabIndex = 15;
-            this.label7.Text = "n:";
+            this.spotlightNLabel.AutoSize = true;
+            this.spotlightNLabel.Location = new System.Drawing.Point(208, 57);
+            this.spotlightNLabel.Name = "spotlightNLabel";
+            this.spotlightNLabel.Size = new System.Drawing.Size(24, 17);
+            this.spotlightNLabel.TabIndex = 17;
+            this.spotlightNLabel.Text = "10";
             // 
             // spotlightAngleLabel
             // 
@@ -494,14 +322,186 @@
             this.spotlightAngleLabel.TabIndex = 16;
             this.spotlightAngleLabel.Text = "51.5";
             // 
-            // spotlightNLabel
+            // label7
             // 
-            this.spotlightNLabel.AutoSize = true;
-            this.spotlightNLabel.Location = new System.Drawing.Point(208, 57);
-            this.spotlightNLabel.Name = "spotlightNLabel";
-            this.spotlightNLabel.Size = new System.Drawing.Size(24, 17);
-            this.spotlightNLabel.TabIndex = 17;
-            this.spotlightNLabel.Text = "10";
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(156, 57);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(20, 17);
+            this.label7.TabIndex = 15;
+            this.label7.Text = "n:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(156, 21);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(31, 17);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "kąt:";
+            // 
+            // spotlightNTrackBar
+            // 
+            this.spotlightNTrackBar.Location = new System.Drawing.Point(6, 57);
+            this.spotlightNTrackBar.Maximum = 200;
+            this.spotlightNTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.spotlightNTrackBar.Name = "spotlightNTrackBar";
+            this.spotlightNTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.spotlightNTrackBar.TabIndex = 13;
+            this.spotlightNTrackBar.Value = 10;
+            this.spotlightNTrackBar.ValueChanged += new System.EventHandler(this.spotlightNTrackBar_ValueChanged);
+            // 
+            // spotlightAngleTrackBar
+            // 
+            this.spotlightAngleTrackBar.Location = new System.Drawing.Point(6, 21);
+            this.spotlightAngleTrackBar.Maximum = 900;
+            this.spotlightAngleTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.spotlightAngleTrackBar.Name = "spotlightAngleTrackBar";
+            this.spotlightAngleTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.spotlightAngleTrackBar.TabIndex = 12;
+            this.spotlightAngleTrackBar.Value = 515;
+            this.spotlightAngleTrackBar.ValueChanged += new System.EventHandler(this.spotlightAngleTrackBar_ValueChanged);
+            // 
+            // nlabel
+            // 
+            this.nlabel.AutoSize = true;
+            this.nlabel.Location = new System.Drawing.Point(214, 129);
+            this.nlabel.Name = "nlabel";
+            this.nlabel.Size = new System.Drawing.Size(24, 17);
+            this.nlabel.TabIndex = 11;
+            this.nlabel.Text = "20";
+            // 
+            // kslabel
+            // 
+            this.kslabel.AutoSize = true;
+            this.kslabel.Location = new System.Drawing.Point(214, 93);
+            this.kslabel.Name = "kslabel";
+            this.kslabel.Size = new System.Drawing.Size(36, 17);
+            this.kslabel.TabIndex = 10;
+            this.kslabel.Text = "0.50";
+            // 
+            // kdlabel
+            // 
+            this.kdlabel.AutoSize = true;
+            this.kdlabel.Location = new System.Drawing.Point(214, 57);
+            this.kdlabel.Name = "kdlabel";
+            this.kdlabel.Size = new System.Drawing.Size(36, 17);
+            this.kdlabel.TabIndex = 9;
+            this.kdlabel.Text = "0.20";
+            // 
+            // kalabel
+            // 
+            this.kalabel.AutoSize = true;
+            this.kalabel.Location = new System.Drawing.Point(214, 21);
+            this.kalabel.Name = "kalabel";
+            this.kalabel.Size = new System.Drawing.Size(36, 17);
+            this.kalabel.TabIndex = 8;
+            this.kalabel.Text = "0.15";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(162, 129);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(20, 17);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "n:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(162, 93);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(26, 17);
+            this.label4.TabIndex = 6;
+            this.label4.Text = "ks:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(162, 57);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(27, 17);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "kd:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(162, 21);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(27, 17);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "ka:";
+            // 
+            // nTrackBar
+            // 
+            this.nTrackBar.Location = new System.Drawing.Point(6, 129);
+            this.nTrackBar.Maximum = 200;
+            this.nTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.nTrackBar.Name = "nTrackBar";
+            this.nTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.nTrackBar.TabIndex = 3;
+            this.nTrackBar.Value = 20;
+            this.nTrackBar.ValueChanged += new System.EventHandler(this.nTrackBar_ValueChanged);
+            // 
+            // ksTrackBar
+            // 
+            this.ksTrackBar.Location = new System.Drawing.Point(6, 93);
+            this.ksTrackBar.Maximum = 100;
+            this.ksTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.ksTrackBar.Name = "ksTrackBar";
+            this.ksTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.ksTrackBar.TabIndex = 2;
+            this.ksTrackBar.Value = 50;
+            this.ksTrackBar.ValueChanged += new System.EventHandler(this.ksTrackBar_ValueChanged);
+            // 
+            // kdTrackBar
+            // 
+            this.kdTrackBar.Location = new System.Drawing.Point(6, 57);
+            this.kdTrackBar.Maximum = 100;
+            this.kdTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.kdTrackBar.Name = "kdTrackBar";
+            this.kdTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.kdTrackBar.TabIndex = 1;
+            this.kdTrackBar.Value = 20;
+            this.kdTrackBar.ValueChanged += new System.EventHandler(this.kdTrackBar_ValueChanged);
+            // 
+            // kaTrackBar
+            // 
+            this.kaTrackBar.Location = new System.Drawing.Point(6, 21);
+            this.kaTrackBar.Maximum = 100;
+            this.kaTrackBar.MaximumSize = new System.Drawing.Size(150, 30);
+            this.kaTrackBar.Name = "kaTrackBar";
+            this.kaTrackBar.Size = new System.Drawing.Size(150, 56);
+            this.kaTrackBar.TabIndex = 0;
+            this.kaTrackBar.Value = 15;
+            this.kaTrackBar.ValueChanged += new System.EventHandler(this.kaTrackBar_ValueChanged);
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.label1);
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox6.Location = new System.Drawing.Point(3, 636);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(288, 108);
+            this.groupBox6.TabIndex = 6;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Klatki na sekundę";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(6, 28);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(46, 17);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            // 
+            // backgroundWorker1
+            // 
+            this.backgroundWorker1.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker1_DoWork);
+            this.backgroundWorker1.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker1_RunWorkerCompleted);
             // 
             // Form1
             // 
@@ -524,16 +524,16 @@
             this.groupBox1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.kaTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.spotlightAngleTrackBar)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.spotlightNTrackBar)).EndInit();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.spotlightNTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.spotlightAngleTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ksTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kdTrackBar)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.kaTrackBar)).EndInit();
+            this.groupBox6.ResumeLayout(false);
+            this.groupBox6.PerformLayout();
             this.ResumeLayout(false);
 
         }

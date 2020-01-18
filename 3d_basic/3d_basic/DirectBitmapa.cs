@@ -18,7 +18,6 @@ namespace _3d_basic
         public bool Disposed { get; private set; }
         public int Height { get; private set; }
         public int Width { get; private set; }
-
         protected GCHandle BitsHandle { get; private set; }
 
         public DirectBitmap(int width, int height)
